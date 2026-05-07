@@ -1,0 +1,54 @@
+.version-update-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  padding: 0.25rem 1rem;
+  background: var(--info-bg, #fff8e1);
+  color: var(--info-fg, #5a4500);
+  border: 0;
+  border-bottom: 1px solid var(--info-border, #e6c34a);
+  border-radius: 0;
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+
+.version-update-text {
+  flex: 0 1 auto;
+}
+
+.version-update-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.version-update-upgrade {
+  padding: 0.15rem 0.55rem;
+  background: var(--accent);
+  color: var(--accent-fg);
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.version-update-upgrade:hover {
+  filter: brightness(1.05);
+}
+
+.version-update-dismiss {
+  background: transparent;
+  border: 1px solid transparent;
+  color: inherit;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.05rem 0.4rem;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.version-update-dismiss:hover {
+  border-color: currentColor;
+}

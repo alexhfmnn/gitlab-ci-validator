@@ -1,0 +1,121 @@
+.cicd-variables {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  background: var(--panel-bg);
+}
+
+.cicd-variables-title {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.cicd-variables-section {
+  border-top: 1px solid var(--border-soft);
+  padding-top: 0.85rem;
+  margin-top: 0.85rem;
+}
+
+.cicd-variables-section:first-of-type {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+}
+
+.section-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.section-title h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.section-subtitle {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.cicd-variables .add-variable {
+  padding: 0.35rem 0.7rem;
+  background: var(--accent);
+  color: var(--accent-fg);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.cicd-variables .add-variable:hover {
+  filter: brightness(1.05);
+}
+
+.cicd-variables .empty-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.cicd-variables .variables-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cicd-variables .variables-table th {
+  text-align: left;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cicd-variables .variables-table td {
+  padding: 0.3rem 0.4rem;
+  vertical-align: middle;
+}
+
+.cicd-variables .variables-table input[type='text'] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  color: var(--fg);
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+}
+
+.cicd-variables .remove-variable {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 4px;
+  padding: 0.1rem 0.45rem;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.cicd-variables .remove-variable:hover {
+  border-color: var(--error-border);
+  color: var(--error-fg);
+}

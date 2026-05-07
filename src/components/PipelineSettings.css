@@ -1,0 +1,36 @@
+.pipeline-settings {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.pipeline-settings .setting-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.pipeline-settings label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pipeline-settings select,
+.pipeline-settings input[type='text'] {
+  padding: 0.3rem 0.55rem;
+  background: var(--input-bg);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+}
+
+.pipeline-settings input[type='text'] {
+  width: 8rem;
+}

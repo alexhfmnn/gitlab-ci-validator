@@ -1,0 +1,21 @@
+.needs-error {
+  background: var(--error-bg);
+  border: 1px solid var(--error-border);
+  color: var(--error-fg);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.needs-error ul {
+  margin: 0.4rem 0 0 0;
+  padding-left: 1.25rem;
+}
+
+.needs-error code {
+  font-family: var(--mono);
+  background: rgba(0, 0, 0, 0.07);
+  padding: 0 0.25rem;
+  border-radius: 3px;
+}

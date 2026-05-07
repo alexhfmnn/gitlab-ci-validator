@@ -1,0 +1,28 @@
+version: 2
+updates:
+  # Backend — pnpm dependencies
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - frontend
+    commit-message:
+      prefix: 'deps(frontend)'
+
+  # GitHub Actions itself
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 3
+    labels:
+      - dependencies
+      - ci
+    commit-message:
+      prefix: 'deps(ci)'

@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Schemas are fetched at build time by scripts/fetch-schemas.ts (CI)
+# and downloaded locally on demand. Do not commit them.
+public/schemas/
+
+# Vite cache
+.vite/
+
+# pnpm local store (when configured to be in-project)
+.pnpm-store/
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Agent / per-user scratch
+tasks/
+.claude/settings.local.json

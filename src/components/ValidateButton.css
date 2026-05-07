@@ -1,0 +1,20 @@
+.validate-button {
+  padding: 0.55rem 1.1rem;
+  background: var(--accent);
+  color: var(--accent-fg);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.validate-button:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.validate-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

@@ -1,0 +1,15 @@
+.yaml-editor {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.yaml-editor .cm-editor {
+  height: 500px;
+}
+
+.yaml-editor .cm-scroller {
+  font-family: var(--mono);
+  font-size: 0.9rem;
+}
