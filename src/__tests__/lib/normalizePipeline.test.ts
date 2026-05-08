@@ -58,6 +58,84 @@ describe('normalizePipeline', () => {
     expect(out['scalar_job']).toBe(42);
     expect(out['real']).toEqual({ script: 'echo' });
   });
+
+  it('flattens nested arrays in job cache (multiple cache entries)', () => {
+    const out = normalizePipeline({
+      myjob: {
+        script: 'echo',
+        cache: [
+          [{ key: 'gradle-global', paths: ['$CI_PROJECT_DIR/.gradle/'] }],
+          [{ key: 'npm-global', paths: ['$CI_PROJECT_DIR/.npm/'] }],
+        ],
+      },
+    }) as Record<string, Record<string, unknown>>;
+    expect(out['myjob']?.['cache']).toEqual([
+      { key: 'gradle-global', paths: ['$CI_PROJECT_DIR/.gradle/'] },
+      { key: 'npm-global', paths: ['$CI_PROJECT_DIR/.npm/'] },
+    ]);
+  });
+
+  it('flattens nested arrays in job services, needs, tags, dependencies, extends', () => {
+    const out = normalizePipeline({
+      myjob: {
+        script: 'echo',
+        services: [['postgres:14'], ['redis:7']],
+        needs: [[{ job: 'build' }], [{ job: 'lint' }]],
+        tags: [['fcn'], ['linux']],
+        dependencies: [['build'], ['compile']],
+        extends: [['.shared'], ['.gradle']],
+      },
+    }) as Record<string, Record<string, unknown>>;
+    const job = out['myjob'] ?? {};
+    expect(job['services']).toEqual(['postgres:14', 'redis:7']);
+    expect(job['needs']).toEqual([{ job: 'build' }, { job: 'lint' }]);
+    expect(job['tags']).toEqual(['fcn', 'linux']);
+    expect(job['dependencies']).toEqual(['build', 'compile']);
+    expect(job['extends']).toEqual(['.shared', '.gradle']);
+  });
+
+  it('flattens nested arrays in top-level include, cache, services', () => {
+    const out = normalizePipeline({
+      include: [[{ local: 'a.yml' }], [{ local: 'b.yml' }, { local: 'c.yml' }], { local: 'd.yml' }],
+      cache: [[{ key: 'x', paths: ['p'] }]],
+      services: [['postgres'], 'redis'],
+    }) as Record<string, unknown>;
+    expect(out['include']).toEqual([
+      { local: 'a.yml' },
+      { local: 'b.yml' },
+      { local: 'c.yml' },
+      { local: 'd.yml' },
+    ]);
+    expect(out['cache']).toEqual([{ key: 'x', paths: ['p'] }]);
+    expect(out['services']).toEqual(['postgres', 'redis']);
+  });
+
+  it('flattens nested arrays in default block (cache, services, tags)', () => {
+    const out = normalizePipeline({
+      default: {
+        cache: [[{ key: 'g' }], [{ key: 'n' }]],
+        services: [['postgres'], ['redis']],
+        tags: [['fcn'], ['linux']],
+      },
+    }) as Record<string, Record<string, unknown>>;
+    const def = out['default'] ?? {};
+    expect(def['cache']).toEqual([{ key: 'g' }, { key: 'n' }]);
+    expect(def['services']).toEqual(['postgres', 'redis']);
+    expect(def['tags']).toEqual(['fcn', 'linux']);
+  });
+
+  it('leaves non-array values in flattenable keys untouched', () => {
+    const out = normalizePipeline({
+      myjob: {
+        script: 'echo',
+        cache: { key: 'single', paths: ['p'] },
+        extends: '.base',
+      },
+    }) as Record<string, Record<string, unknown>>;
+    const job = out['myjob'] ?? {};
+    expect(job['cache']).toEqual({ key: 'single', paths: ['p'] });
+    expect(job['extends']).toBe('.base');
+  });
 });
 
 describe('normalizePipelineToObject', () => {
