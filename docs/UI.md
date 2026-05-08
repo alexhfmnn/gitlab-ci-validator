@@ -180,7 +180,7 @@ Default: `Push event`
 **Manual (web) / API / Trigger token**
 
 - `Ref kind` — choice between branch and tag (`refKind: 'branch' | 'tag'`)
-- `Branch name` *or* `Tag name` (depending on `refKind`) — required, branch defaults to Default branch
+- `Branch name` _or_ `Tag name` (depending on `refKind`) — required, branch defaults to Default branch
 
 ---
 
@@ -326,14 +326,14 @@ Script content: plain monospace text block. If a section (`before_script` or `af
 
 ## State Reset Rules
 
-| Action                                | Clears                                                    |
-| ------------------------------------- | --------------------------------------------------------- |
-| Change schema version                 | `validationResult`, `simulationResult`                    |
-| Change default branch                 | Nothing (only updates persisted setting + form defaults)  |
-| Edit YAML                             | Nothing                                                   |
-| Click Validate (empty)                | Sets `validationResult = { status: 'empty' }`             |
-| Click Validate (valid)                | Sets `validationResult`, runs simulation                  |
-| Click Validate (invalid / yaml_error) | Sets `validationResult`, clears `simulationResult`        |
-| Change trigger type                   | Nothing (custom + scoped variables persist)               |
-| Change trigger fields                 | Nothing                                                   |
-| Click an error row in ValidationResult| Sets `editorTarget`; YamlEditor jumps and clears it again |
+| Action                                 | Clears                                                    |
+| -------------------------------------- | --------------------------------------------------------- |
+| Change schema version                  | `validationResult`, `simulationResult`                    |
+| Change default branch                  | Nothing (only updates persisted setting + form defaults)  |
+| Edit YAML                              | Nothing                                                   |
+| Click Validate (empty)                 | Sets `validationResult = { status: 'empty' }`             |
+| Click Validate (valid)                 | Sets `validationResult`, runs simulation                  |
+| Click Validate (invalid / yaml_error)  | Sets `validationResult`, clears `simulationResult`        |
+| Change trigger type                    | Nothing (custom + scoped variables persist)               |
+| Change trigger fields                  | Nothing                                                   |
+| Click an error row in ValidationResult | Sets `editorTarget`; YamlEditor jumps and clears it again |
