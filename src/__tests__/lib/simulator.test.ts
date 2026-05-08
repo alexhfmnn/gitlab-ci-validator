@@ -229,3 +229,104 @@ describe('simulate — tags', () => {
     expect(b?.tags).toEqual(['custom']);
   });
 });
+
+describe('simulate — YAML variables in rule context', () => {
+  it('uses top-level YAML variables when evaluating job rules', () => {
+    const result = simulate(
+      {
+        variables: { HAS_FRONTEND: 'false' },
+        'build-frontend': {
+          script: 'echo build',
+          rules: [{ if: '$HAS_FRONTEND == "false"', when: 'never' }, { when: 'on_success' }],
+        },
+        'build-backend': {
+          script: 'echo build',
+          rules: [{ if: '$HAS_BACKEND == "false"', when: 'never' }, { when: 'on_success' }],
+        },
+      },
+      'branch_creation',
+      { defaultBranch: 'main', branchName: 'release/261.4' },
+      [],
+    );
+    if (result.status !== 'complete') throw new Error('expected complete');
+    expect(result.jobs.map((j) => j.name)).toEqual(['build-backend']);
+    expect(result.activeVariables['HAS_FRONTEND']).toBe('false');
+  });
+
+  it('honors job-level variables overriding the top-level value', () => {
+    const result = simulate(
+      {
+        variables: { FLAG: 'off' },
+        a: {
+          script: 'echo',
+          variables: { FLAG: 'on' },
+          rules: [{ if: '$FLAG == "on"', when: 'on_success' }, { when: 'never' }],
+        },
+        b: {
+          script: 'echo',
+          rules: [{ if: '$FLAG == "on"', when: 'on_success' }, { when: 'never' }],
+        },
+      },
+      'push',
+      inputs,
+      [],
+    );
+    if (result.status !== 'complete') throw new Error('expected complete');
+    expect(result.jobs.map((j) => j.name)).toEqual(['a']);
+  });
+
+  it('honors default.variables when the job has no override', () => {
+    const result = simulate(
+      {
+        default: { variables: { REGION: 'eu' } },
+        a: {
+          script: 'echo',
+          rules: [{ if: '$REGION == "eu"', when: 'on_success' }, { when: 'never' }],
+        },
+      },
+      'push',
+      inputs,
+      [],
+    );
+    if (result.status !== 'complete') throw new Error('expected complete');
+    expect(result.jobs.map((j) => j.name)).toEqual(['a']);
+  });
+
+  it('reads the value field of describable variable objects', () => {
+    const result = simulate(
+      {
+        variables: {
+          TESTSTAGE: { value: 'INT1', options: ['DEV1', 'INT1'], description: 'stage' },
+        },
+        a: {
+          script: 'echo',
+          rules: [{ if: '$TESTSTAGE == "INT1"', when: 'on_success' }, { when: 'never' }],
+        },
+      },
+      'push',
+      inputs,
+      [],
+    );
+    if (result.status !== 'complete') throw new Error('expected complete');
+    expect(result.jobs.map((j) => j.name)).toEqual(['a']);
+    expect(result.activeVariables['TESTSTAGE']).toBe('INT1');
+  });
+
+  it('lets predefined trigger vars win over YAML vars (existing precedence)', () => {
+    const result = simulate(
+      {
+        variables: { CI_COMMIT_BRANCH: 'fake' },
+        a: {
+          script: 'echo',
+          rules: [{ if: '$CI_COMMIT_BRANCH == "main"', when: 'on_success' }, { when: 'never' }],
+        },
+      },
+      'push',
+      { defaultBranch: 'main', branchName: 'main' },
+      [],
+    );
+    if (result.status !== 'complete') throw new Error('expected complete');
+    expect(result.jobs.map((j) => j.name)).toEqual(['a']);
+    expect(result.activeVariables['CI_COMMIT_BRANCH']).toBe('main');
+  });
+});

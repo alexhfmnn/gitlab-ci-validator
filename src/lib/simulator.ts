@@ -5,6 +5,7 @@ import type {
   SimulationResult,
   TriggerInputs,
   TriggerType,
+  VariableContext,
 } from '../types';
 import { buildVariableContext } from './triggerContexts';
 import { evaluateJobInclusion, evaluateWorkflowRules } from './rulesEvaluator';
@@ -38,15 +39,22 @@ export function simulate(
   customVariables: CustomVariable[],
   scopedVariables: CustomVariable[] = [],
 ): SimulationResult {
-  const variables = buildVariableContext(
+  const triggerContext = buildVariableContext(
     triggerType,
     triggerInputs,
     customVariables,
     scopedVariables,
   );
 
+  const globalDefault = isPlainObject(parsedYaml['default']) ? parsedYaml['default'] : undefined;
+  const yamlPipelineVars: VariableContext = {
+    ...extractYamlVariables(parsedYaml),
+    ...extractYamlVariables(globalDefault),
+  };
+  const pipelineContext: VariableContext = { ...yamlPipelineVars, ...triggerContext };
+
   const workflow = isPlainObject(parsedYaml['workflow']) ? parsedYaml['workflow'] : undefined;
-  const wfResult = evaluateWorkflowRules(workflow, variables);
+  const wfResult = evaluateWorkflowRules(workflow, pipelineContext);
   if (wfResult.blocked) {
     return { status: 'pipeline_blocked', matchedRule: wfResult.matchedRule };
   }
@@ -56,9 +64,14 @@ export function simulate(
   const stageOrder = new Map(stages.map((s, i) => [s, i] as const));
 
   const jobs = collectJobs(parsedYaml);
-  const globalDefault = isPlainObject(parsedYaml['default']) ? parsedYaml['default'] : undefined;
 
-  const included = buildIncludedJobs(jobs, variables, globalDefault, fallbackStage);
+  const included = buildIncludedJobs(
+    jobs,
+    yamlPipelineVars,
+    triggerContext,
+    globalDefault,
+    fallbackStage,
+  );
   sortIncludedJobs(included, jobs, stageOrder);
 
   return {
@@ -66,8 +79,31 @@ export function simulate(
     jobs: included,
     needsErrors: collectNeedsErrors(included, jobs),
     includeDetected: parsedYaml['include'] !== undefined,
-    activeVariables: variables,
+    activeVariables: pipelineContext,
   };
+}
+
+function extractYamlVariables(source: Record<string, unknown> | undefined): VariableContext {
+  if (!source) return {};
+  const raw = source['variables'];
+  if (!isPlainObject(raw)) return {};
+  const out: VariableContext = {};
+  for (const [key, value] of Object.entries(raw)) {
+    const literal = coerceVariableValue(value);
+    if (literal !== undefined) out[key] = literal;
+  }
+  return out;
+}
+
+function coerceVariableValue(value: unknown): string | undefined {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  if (isPlainObject(value) && 'value' in value) {
+    const inner = value['value'];
+    if (typeof inner === 'string') return inner;
+    if (typeof inner === 'number' || typeof inner === 'boolean') return String(inner);
+  }
+  return undefined;
 }
 
 function collectStages(parsedYaml: Record<string, unknown>): string[] {
@@ -89,13 +125,19 @@ function collectJobs(parsedYaml: Record<string, unknown>): RawJob[] {
 
 function buildIncludedJobs(
   jobs: RawJob[],
-  variables: ReturnType<typeof buildVariableContext>,
+  yamlPipelineVars: VariableContext,
+  triggerContext: VariableContext,
   globalDefault: Record<string, unknown> | undefined,
   fallbackStage: string,
 ): SimulatedJob[] {
   const included: SimulatedJob[] = [];
   for (const { name, def } of jobs) {
-    const incl = evaluateJobInclusion(def, variables);
+    const jobContext: VariableContext = {
+      ...yamlPipelineVars,
+      ...extractYamlVariables(def),
+      ...triggerContext,
+    };
+    const incl = evaluateJobInclusion(def, jobContext);
     if (!incl.included) continue;
     const declaredStage = def['stage'];
     included.push({
