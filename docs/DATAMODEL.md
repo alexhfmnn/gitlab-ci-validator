@@ -159,18 +159,18 @@ export interface EditorTarget {
 
 ```ts
 interface AppState {
-  yaml: string;                          // persisted in sessionStorage at `gcv:yaml`
-  schemaVersion: string;                 // localStorage `gcv:settings:gitlabVersion`
-  defaultBranch: string;                 // localStorage `gcv:settings:defaultBranch`
+  yaml: string; // persisted in sessionStorage at `gcv:yaml`
+  schemaVersion: string; // localStorage `gcv:settings:gitlabVersion`
+  defaultBranch: string; // localStorage `gcv:settings:defaultBranch`
   dismissedVersionWarning: string | null; // localStorage `gcv:dismissed:versionWarning`
   validationResult: ValidationResult;
   triggerType: TriggerType;
   triggerInputs: TriggerInputs;
-  scopedVariables: CustomVariable[];     // localStorage `gcv:variables:scoped`
-  customVariables: CustomVariable[];     // in-memory only, reset on reload
+  scopedVariables: CustomVariable[]; // localStorage `gcv:variables:scoped`
+  customVariables: CustomVariable[]; // in-memory only, reset on reload
   simulationResult: SimulationResult;
-  editorTarget: EditorTarget | null;     // one-shot navigation signal (cleared after applied)
-  paginationPage: number;                // current page in simulation result
+  editorTarget: EditorTarget | null; // one-shot navigation signal (cleared after applied)
+  paginationPage: number; // current page in simulation result
 }
 ```
 
