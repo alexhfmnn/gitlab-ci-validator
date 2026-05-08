@@ -23,18 +23,26 @@ async function fetchOne(ref: string, filename: string): Promise<'fetched' | 'ski
   if (await fileExists(target)) return 'skipped';
 
   const url = SCHEMA_URL(ref);
+  const parsedUrl = new URL(url);
+  if (parsedUrl.protocol !== 'https:' || parsedUrl.host !== 'gitlab.com') {
+    throw new Error(`Refusing to fetch from untrusted origin: ${url}`);
+  }
+
   const res = await fetch(url);
   if (!res.ok) {
     throw new Error(`Failed to fetch ${url} — HTTP ${res.status} ${res.statusText}`);
   }
   const body = await res.text();
-  // Parse to verify it's valid JSON; rethrow as a clearer error if not.
+  let parsed: unknown;
   try {
-    JSON.parse(body);
+    parsed = JSON.parse(body);
   } catch (e) {
     throw new Error(`Schema at ${url} is not valid JSON: ${(e as Error).message}`);
   }
-  await writeFile(target, body, 'utf-8');
+  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+    throw new Error(`Schema at ${url} is not a JSON object`);
+  }
+  await writeFile(target, JSON.stringify(parsed), 'utf-8');
   return 'fetched';
 }
 
