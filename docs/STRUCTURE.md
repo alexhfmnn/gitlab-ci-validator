@@ -149,6 +149,17 @@ Post-AJV checks that the JSON Schema cannot express on its own (e.g. unknown key
 
 Normalizes the parsed YAML into a stable `Record<string, unknown>` shape used by both the validator and the simulator. Handles edge cases like top-level lists or scalars.
 
+Also flattens one level of nested arrays for keys whose schema requires a flat array but which GitLab's "View merged YAML" can emit as array-of-arrays after anchor/`extends`/`!reference` composition. Without this, AJV rejects valid GitLab configs that the GitLab pipeline editor accepts.
+
+Flattened keys (one level deep, only when the value is already an array):
+
+- **Top level**: `include`, `cache`, `services`
+- **`workflow:`**: `rules`
+- **`default:`**: `cache`, `services`, `tags`
+- **Each job**: `rules`, `cache`, `services`, `needs`, `tags`, `dependencies`, `extends`
+
+`script`/`before_script`/`after_script` are intentionally **not** flattened here — the GitLab schema permits nested string arrays for those keys, and the simulator's `scriptResolver.ts` already flattens them at use time.
+
 ### `src/lib/rulesEvaluator.ts`
 
 Most complex module. Evaluates `rules:`, `only:`, `except:`, and `workflow: rules:` against a variable map.
