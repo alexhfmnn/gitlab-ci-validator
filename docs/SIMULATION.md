@@ -253,6 +253,10 @@ above for the complete variable set including SHA placeholders and ref metadata.
 
 **Merge order**: predefined trigger variables are set first. Custom variables are merged on top, but predefined keys are protected — if a custom variable key matches a predefined key, it is ignored (the UI shows an inline error; the evaluator enforces this by using the predefined value).
 
+**YAML-defined variables** (top-level `variables:`, `default.variables:`, and per-job `variables:`) are also injected into the rule-evaluation context by `simulator.ts`. Precedence (low → high): top-level `variables:` → `default.variables:` → job-level `variables:` → scoped/custom → predefined trigger vars. The job-level layer is applied per-job during job evaluation; pipeline-level YAML vars (top-level + default) are visible to `workflow:rules` and end up in `activeVariables`.
+
+A YAML variable can be either a string (`HAS_FRONTEND: "false"`) or a describable object (`{ value: "INT1", options: [...], description: "..." }`) — for the latter, the simulator reads the `value` field. Numbers and booleans are coerced via `String()`.
+
 "Unset" variables are absent from the `VariableContext` map entirely (not set to empty string).
 
 ---
