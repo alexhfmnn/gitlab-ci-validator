@@ -67,7 +67,6 @@ When investigating behaviour, jump straight to the right reference:
 - **No live validation** — validate only on explicit button click
 - **Schemas are fetched at build time** by `scripts/fetch-schemas.ts`, which runs in GitHub Actions only (not locally)
 - **Strict build**: any schema fetch failure (missing tag, network error, 404) fails the build immediately
-- **MIT License**
 - **No README**
 
 ## Commands
