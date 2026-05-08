@@ -42,6 +42,9 @@ async function fetchOne(ref: string, filename: string): Promise<'fetched' | 'ski
   if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
     throw new Error(`Schema at ${url} is not a JSON object`);
   }
+  // codeql[js/http-to-file-access] Build-time-only fetch from a pinned https://gitlab.com URL with
+  // tagged refs from src/schemas.config.ts. The body is JSON.parse-validated, shape-checked, and
+  // re-serialized; the file is consumed only as JSON-Schema input to AJV (no exec, no path use).
   await writeFile(target, JSON.stringify(parsed), 'utf-8');
   return 'fetched';
 }
